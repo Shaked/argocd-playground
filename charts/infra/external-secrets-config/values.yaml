@@ -1,0 +1,3 @@
+external-secrets:
+  enabled: true
+region: "none"

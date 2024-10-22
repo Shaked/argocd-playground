@@ -1,0 +1,3 @@
+repoUrl: https://github.com/Shaked/playground.git
+version: HEAD
+namespace: app1-canary

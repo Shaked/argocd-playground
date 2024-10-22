@@ -1,0 +1,65 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: apps
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+  - matrix:
+      generators:
+      - git:
+          repoURL: https://github.com/Shaked/playground
+          revision: main
+          files:
+            - path: argocd/appsets/apps/cluster-labels/**/argo.yaml
+          values:
+            product: '{{ index .path.segments 4 }}'
+            packageName: '{{ index .path.segments 5 }}'
+            environment: '{{ index .path.segments 6 }}'
+            appsetName: 'apps'
+      - clusters:
+          selector:
+            matchLabels:
+              argocd.argoproj.io/secret-type: cluster
+              environment: '{{ .values.environment }}'
+              product-{{ .values.product }}: '{{ dig "enabled" (true) . }}'
+  template:
+    metadata:
+      name: 'apps-{{ .name }}-{{ .values.product }}-{{ .values.packageName }}'
+      labels:
+        product: '{{ .values.product }}'
+        packageName: '{{ .values.packageName }}'
+        environment: '{{ .values.environment }}'
+        region: '{{ index .metadata.labels "region" }}'
+        appset-name: '{{ .values.appsetName }}'
+    spec:
+      project: "apps"
+      sources:
+      - repoURL: "{{ .repoUrl }}"
+        targetRevision: "{{ .version }}"
+        path: "charts/apps/{{ .values.product }}/{{ .values.packageName }}"
+        helm:
+          releaseName: '{{ dig "releaseName" (printf "%s-%s" (.values.product) (.values.packageName)) . }}'
+          ignoreMissingValueFiles: true
+          valueFiles:
+          - '$values/values/apps/{{ .values.product }}/{{ .values.packageName }}/values.yaml'
+          - '$values/values/apps/{{ .values.product }}/{{ .values.packageName }}/{{ .values.environment }}/values.yaml'
+          - '$values/values/apps/{{ .values.product }}/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "region" }}/values.yaml'
+          - '$values/values/apps/{{ .values.product }}/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "region" }}/{{ .name }}/values.yaml'
+      - repoURL: '{{ .repoUrl }}'
+        targetRevision: "{{ .version }}"
+        ref: values
+      destination:
+        server: "{{ .server }}"
+        namespace: '{{ dig "namespace" (printf "%s" (.values.product)) . }}'
+      syncPolicy:
+        #https://github.com/argoproj/argo-cd/issues/18201
+        #preserveResourcesOnDeletion: true
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true
+        - PrunePropagationPolicy=orphan

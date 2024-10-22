@@ -1,0 +1,61 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: infra-config
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+  - matrix:
+      generators:
+      - git:
+          repoURL: https://github.com/Shaked/playground
+          revision: main
+          files:
+            - path: argocd/appsets/infra/cluster-labels/config/**/argo.yaml
+          values:
+            packageName: '{{ index .path.segments 5 }}'
+            clusterPurpose: '{{ index .path.segments 6 }}'
+            environment: '{{ index .path.segments 7 }}'
+            appsetName: 'infra-config'
+      - clusters:
+          selector:
+            matchLabels:
+              argocd.argoproj.io/secret-type: cluster
+              cluster-purpose: '{{ .values.clusterPurpose }}'
+              environment: '{{ .values.environment }}'
+  template:
+    metadata:
+      name: 'infra-{{ .name }}-{{ .values.packageName }}'
+      labels:
+        cluster-purpose: '{{ .values.clusterPurpose }}'
+        environment: '{{ index .metadata.labels "environment" }}'
+        region: '{{ index .metadata.labels "region" }}'
+        appset-name: '{{ .values.appsetName }}'
+    spec:
+      project: "infra"
+      sources:
+      - repoURL: "{{ .repoUrl }}"
+        targetRevision: "{{ .version }}"
+        path: "charts/infra/{{ .values.packageName }}"
+        helm:
+          releaseName: '{{ dig "releaseName" (printf "%s" (.values.packageName)) . }}'
+          ignoreMissingValueFiles: true
+          valueFiles:
+          - '$values/values/infra/{{ .values.packageName }}/values.yaml'
+          - '$values/values/infra/{{ .values.packageName }}/{{ .values.environment }}/values.yaml'
+          - '$values/values/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "region" }}/values.yaml'
+          - '$values/values/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "region" }}/{{ .name }}/values.yaml'
+      - repoURL: 'https://github.com/Shaked/playground.git'
+        targetRevision: HEAD
+        ref: values
+      destination:
+        server: "{{ .server }}"
+        namespace: '{{ dig "namespace" (printf "%s" (.values.packageName)) . }}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true

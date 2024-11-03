@@ -10,7 +10,7 @@ spec:
   - matrix:
       generators:
       - git:
-          repoURL: https://github.com/Shaked/playground
+          repoURL: https://github.com/Shaked/argocd-playground
           revision: main
           files:
             - path: argocd/appsets/infra/cluster-labels/config/**/argo.yaml
@@ -47,7 +47,7 @@ spec:
           - '$values/values/infra/{{ .values.packageName }}/{{ .values.environment }}/values.yaml'
           - '$values/values/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "region" }}/values.yaml'
           - '$values/values/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "region" }}/{{ .name }}/values.yaml'
-      - repoURL: 'https://github.com/Shaked/playground.git'
+      - repoURL: 'https://github.com/Shaked/argocd-playground.git'
         targetRevision: HEAD
         ref: values
       destination:

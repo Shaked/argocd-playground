@@ -14,13 +14,13 @@ spec:
     syncOptions:
     - CreateNamespace=true
   sources:
-    - repoURL: 'https://github.com/Shaked/playground'
+    - repoURL: 'https://github.com/Shaked/argocd-playground'
       path: "argocd/projects"
       targetRevision: main
-    - repoURL: 'https://github.com/Shaked/playground'
+    - repoURL: 'https://github.com/Shaked/argocd-playground'
       path: "argocd/appsets/infra"
       targetRevision: main
-    - repoURL: 'https://github.com/Shaked/playground'
+    - repoURL: 'https://github.com/Shaked/argocd-playground'
       path: "argocd/appsets/apps"
       targetRevision: main
   destination:

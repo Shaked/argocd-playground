@@ -1,4 +1,4 @@
-repoUrl: https://github.com/Shaked/playground.git
+repoUrl: https://github.com/Shaked/argocd-playground.git
 version: HEAD
 enabled: true
 namespace: app1-canary

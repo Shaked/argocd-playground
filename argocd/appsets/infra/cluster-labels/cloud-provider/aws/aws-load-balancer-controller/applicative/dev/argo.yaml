@@ -1,2 +1,2 @@
-version: "1.9.1"
+chartVersion: "1.9.1"
 chartRepoUrl: https://aws.github.io/eks-charts

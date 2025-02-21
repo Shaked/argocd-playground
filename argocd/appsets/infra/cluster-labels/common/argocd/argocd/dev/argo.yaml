@@ -1,0 +1,3 @@
+chartRepoUrl: https://argoproj.github.io/argo-helm
+chartVersion: "7.8.2"
+helmPackageName: argo-cd

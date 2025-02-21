@@ -42,7 +42,7 @@ spec:
       project: "infra"
       sources:
       - repoURL: "{{ .chartRepoUrl }}"
-        chart: '{{ dig "helmPackageName" (printf "%s" (.values.packageName)) . }}'
+        '{{ ternary "chart" "path" .isGit }}':: '{{ dig "packagePath" (printf "%s" (.values.packageName)) . }}'
         targetRevision: "{{ .chartVersion }}"
         helm:
           releaseName: '{{ dig "releaseName" (printf "%s" (.values.packageName)) . }}'

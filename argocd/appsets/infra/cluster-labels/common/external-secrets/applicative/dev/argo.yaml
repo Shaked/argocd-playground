@@ -1,3 +1,4 @@
-chartVersion: main
+chartRepoUrl: https://charts.external-secrets.io
+chartVersion: "0.10.4"
 isGit: true
 packagePath: charts/infra/git-override

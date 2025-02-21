@@ -6,6 +6,8 @@ metadata:
 spec:
   goTemplate: true
   goTemplateOptions: ["missingkey=error"]
+  syncPolicy:
+    preserveResourcesOnDeletion: true
   generators:
   - matrix:
       generators:
@@ -39,9 +41,9 @@ spec:
     spec:
       project: "infra"
       sources:
-      - repoURL: "{{ .repoUrl }}"
-        chart: '{{ .values.packageName }}'
-        targetRevision: "{{ .version }}"
+      - repoURL: "{{ .chartRepoUrl }}"
+        chart: '{{ dig "packageName" (printf "%s" (.values.packageName)) . }}'
+        targetRevision: "{{ .chartVersion }}"
         helm:
           releaseName: '{{ dig "releaseName" (printf "%s" (.values.packageName)) . }}'
           ignoreMissingValueFiles: true
@@ -51,15 +53,22 @@ spec:
           - '$values/values/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ .values.cloudProvider }}/values.yaml'
           - '$values/values/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ .values.cloudProvider }}/{{ index .metadata.labels "region" }}/values.yaml'
           - '$values/values/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ .values.cloudProvider }}/{{ index .metadata.labels "region" }}/{{ .name }}/values.yaml'
-      - repoURL: 'https://github.com/Shaked/argocd-playground.git'
-        targetRevision: HEAD
+      - repoURL: '{{ dig "valuesVersion" "chartRepoUrl" . }}'
+        targetRevision: '{{ dig "valuesVersion" "main" . }}'
         ref: values
       destination:
         server: "{{ .server }}"
         namespace: '{{ dig "namespace" (printf "%s" (.values.packageName)) . }}'
+  templatePatch: |
+    spec:
       syncPolicy:
-        automated:
-          prune: true
-          selfHeal: true
         syncOptions:
         - CreateNamespace=true
+        - PrunePropagationPolicy=orphan
+    {{- if and (hasKey . "autoSync") (hasKey .autoSync "enabled") }}
+    {{- if .autoSync.enabled }}
+        automated:
+          prune: {{ dig "autoSync" "prune" "false" . }}
+          selfHeal: {{ dig "autoSync" "selfHeal" "false" . }}
+    {{- end }}
+    {{- end }}

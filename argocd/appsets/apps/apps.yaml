@@ -6,6 +6,8 @@ metadata:
 spec:
   goTemplate: true
   goTemplateOptions: ["missingkey=error"]
+  syncPolicy:
+    preserveResourcesOnDeletion: true
   generators:
   - matrix:
       generators:
@@ -27,18 +29,21 @@ spec:
               product-{{ .values.product }}: '{{ dig "enabled" (true) . }}'
   template:
     metadata:
-      name: 'apps-{{ .name }}-{{ .values.product }}-{{ .values.packageName }}'
+      name: 'apps-{{ .values.environment }}-{{ .name }}-{{ .values.product }}-{{ .values.packageName }}'
+      annotations:
+        # See: https://argo-cd.readthedocs.io/en/stable/operator-manual/high_availability/#manifest-paths-annotation
+        argocd.argoproj.io/manifest-generate-paths: .
       labels:
         product: '{{ .values.product }}'
-        packageName: '{{ .values.packageName }}'
+        package-name: '{{ .values.packageName }}'
         environment: '{{ .values.environment }}'
         region: '{{ index .metadata.labels "region" }}'
         appset-name: '{{ .values.appsetName }}'
     spec:
       project: "apps"
       sources:
-      - repoURL: "{{ .repoUrl }}"
-        targetRevision: "{{ .version }}"
+      - repoURL: "{{ .chartRepoUrl }}"
+        targetRevision: "{{ .chartVersion }}"
         path: "charts/apps/{{ .values.product }}/{{ .values.packageName }}"
         helm:
           releaseName: '{{ dig "releaseName" (printf "%s-%s" (.values.product) (.values.packageName)) . }}'
@@ -48,18 +53,22 @@ spec:
           - '$values/values/apps/{{ .values.product }}/{{ .values.packageName }}/{{ .values.environment }}/values.yaml'
           - '$values/values/apps/{{ .values.product }}/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "region" }}/values.yaml'
           - '$values/values/apps/{{ .values.product }}/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "region" }}/{{ .name }}/values.yaml'
-      - repoURL: '{{ .repoUrl }}'
-        targetRevision: "{{ .version }}"
+      - repoURL: '{{ dig "valuesVersion" "chartRepoUrl" . }}'
+        targetRevision: '{{ dig "valuesVersion" "main" . }}'
         ref: values
       destination:
         server: "{{ .server }}"
         namespace: '{{ dig "namespace" (printf "%s" (.values.product)) . }}'
+  templatePatch: |
+    spec:
       syncPolicy:
-        #https://github.com/argoproj/argo-cd/issues/18201
-        #preserveResourcesOnDeletion: true
-        automated:
-          prune: true
-          selfHeal: true
         syncOptions:
         - CreateNamespace=true
         - PrunePropagationPolicy=orphan
+    {{- if and (hasKey . "autoSync") (hasKey .autoSync "enabled") }}
+    {{- if .autoSync.enabled }}
+        automated:
+          prune: {{ dig "autoSync" "prune" "false" . }}
+          selfHeal: {{ dig "autoSync" "selfHeal" "false" . }}
+    {{- end }}
+    {{- end }}

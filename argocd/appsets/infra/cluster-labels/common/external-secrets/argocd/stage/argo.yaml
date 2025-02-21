@@ -1,2 +1,2 @@
-repoUrl: https://charts.external-secrets.io
+chartRepoUrl: https://charts.external-secrets.io
 version: "0.10.4"

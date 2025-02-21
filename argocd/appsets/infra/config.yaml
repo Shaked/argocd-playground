@@ -6,6 +6,8 @@ metadata:
 spec:
   goTemplate: true
   goTemplateOptions: ["missingkey=error"]
+  syncPolicy:
+    preserveResourcesOnDeletion: true
   generators:
   - matrix:
       generators:
@@ -28,6 +30,9 @@ spec:
   template:
     metadata:
       name: 'infra-{{ .name }}-{{ .values.packageName }}'
+      annotations:
+        # See: https://argo-cd.readthedocs.io/en/stable/operator-manual/high_availability/#manifest-paths-annotation
+        argocd.argoproj.io/manifest-generate-paths: .
       labels:
         cluster-purpose: '{{ .values.clusterPurpose }}'
         environment: '{{ index .metadata.labels "environment" }}'
@@ -36,9 +41,10 @@ spec:
     spec:
       project: "infra"
       sources:
-      - repoURL: "{{ .repoUrl }}"
-        targetRevision: "{{ .version }}"
+      - repoURL: "{{ .chartRepoUrl }}"
         path: "charts/infra/{{ .values.packageName }}"
+
+        targetRevision: "{{ .chartVersion }}"
         helm:
           releaseName: '{{ dig "releaseName" (printf "%s" (.values.packageName)) . }}'
           ignoreMissingValueFiles: true
@@ -53,9 +59,16 @@ spec:
       destination:
         server: "{{ .server }}"
         namespace: '{{ dig "namespace" (printf "%s" (.values.packageName)) . }}'
+  templatePatch: |
+    spec:
       syncPolicy:
-        automated:
-          prune: true
-          selfHeal: true
         syncOptions:
         - CreateNamespace=true
+        - PrunePropagationPolicy=orphan
+    {{- if and (hasKey . "autoSync") (hasKey .autoSync "enabled") }}
+    {{- if .autoSync.enabled }}
+        automated:
+          prune: {{ dig "autoSync" "prune" "false" . }}
+          selfHeal: {{ dig "autoSync" "selfHeal" "false" . }}
+    {{- end }}
+    {{- end }}

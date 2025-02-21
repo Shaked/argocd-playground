@@ -1,4 +1,4 @@
-repoUrl: https://github.com/Shaked/argocd-playground.git
-version: HEAD
+chartRepoUrl: https://github.com/Shaked/argocd-playground.git
+chartVersion: HEAD
 enabled: true
 namespace: app1

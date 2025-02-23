@@ -53,7 +53,7 @@ spec:
           - '$values/values/apps/{{ .values.product }}/{{ .values.packageName }}/{{ .values.environment }}/values.yaml'
           - '$values/values/apps/{{ .values.product }}/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "region" }}/values.yaml'
           - '$values/values/apps/{{ .values.product }}/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "region" }}/{{ .name }}/values.yaml'
-      - repoURL: '{{ dig "valuesVersion" "chartRepoUrl" . }}'
+      - repoURL: '{{ dig "valuesVersion" (printf "%s" (.chartVersion)) . }}'
         targetRevision: '{{ dig "valuesVersion" "main" . }}'
         ref: values
       destination:

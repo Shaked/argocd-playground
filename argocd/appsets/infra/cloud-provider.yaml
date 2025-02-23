@@ -53,7 +53,7 @@ spec:
           - '$values/values/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ .values.cloudProvider }}/values.yaml'
           - '$values/values/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ .values.cloudProvider }}/{{ index .metadata.labels "region" }}/values.yaml'
           - '$values/values/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ .values.cloudProvider }}/{{ index .metadata.labels "region" }}/{{ .name }}/values.yaml'
-      - repoURL: '{{ dig "valuesVersion" "chartRepoUrl" . }}'
+      - repoURL: '{{ dig "valuesVersion" (printf "%s" (.chartVersion)) . }}'
         targetRevision: '{{ dig "valuesVersion" "main" . }}'
         ref: values
       destination:

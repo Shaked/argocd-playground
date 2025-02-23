@@ -7,9 +7,6 @@ spec:
   clusterResourceWhitelist:
   - group: '*'
     kind: '*'
-    clusterSelector:
-      matchLabels:
-        project-p1: "true"
   destinations:
   - namespace: '*'
     server: "*"

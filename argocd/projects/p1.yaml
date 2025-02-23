@@ -9,6 +9,6 @@ spec:
     kind: '*'
   destinations:
   - namespace: '*'
-    server: "*"
+    server: "k3d-*"
   sourceRepos:
   - '*'

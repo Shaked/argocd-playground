@@ -64,10 +64,12 @@ spec:
         syncOptions:
         - CreateNamespace=true
         - PrunePropagationPolicy=orphan
-    {{- if and (hasKey . "autoSync") (hasKey .autoSync "enabled") }}
-    {{- if .autoSync.enabled }}
+    {{- if or (not (hasKey . "autoSync")) (and (hasKey . "autoSync") (hasKey .autoSync "enabled") .autoSync.enabled) }}
         automated:
           prune: {{ dig "autoSync" "prune" "false" . }}
           selfHeal: {{ dig "autoSync" "selfHeal" "false" . }}
     {{- end }}
-    {{- end }}
+    #   For disabling autosync as default
+    #   if and (hasKey . "autoSync") (hasKey .autoSync "enabled")
+    #   if .autoSync.enabled
+    #   end

@@ -28,6 +28,13 @@ spec:
                   cluster-purpose: "{{ .values.clusterPurpose }}"
                   environment: "{{ .values.environment }}"
                   contexts: '{{ .contexts | join "," }}'
+      selector:
+        matchExpressions:
+          - key: contexts
+            operator: In
+            values:
+              - test1
+              - test2
   template:
     metadata:
       name: "infra-{{ .name }}-{{ .values.packageName }}"

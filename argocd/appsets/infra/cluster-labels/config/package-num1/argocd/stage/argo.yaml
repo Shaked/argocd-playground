@@ -1,0 +1,12 @@
+chartRepoUrl: https://github.com/Shaked/argocd-playground.git
+chartVersion: HEAD
+key:
+  components:
+    - compName: comp-product1
+      proudct1: true
+    - compName: comp-product2
+      product2: true
+contexts: ["a", "b", "c"]
+products:
+  product1: false
+  product2: false

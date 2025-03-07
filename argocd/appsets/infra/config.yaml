@@ -33,13 +33,10 @@ spec:
               elements:
                 # This returns
                 #   The value of `.products[.metadata.labels.product]` if exists
+                #   False if .products exists, greather than 0 and  .metadata.labels.product does not exists
                 #   True if .products is set to []
                 #   True if .products is not set
-                - appEnabled: '{{ dig "products" (index .metadata.labels "product") (dig "products" true .) . }}'
-              # elementsYaml: "{{ .key.components | toJson }}"
-      # selector:
-      #   matchLabels:
-      #     appEnabled: "true"
+                - appEnabled: '{{ dig "products" (index .metadata.labels "product") (eq (len (dig "products" dict .)) 0) . }}'
       selector:
         matchExpressions:
           - key: appEnabled

@@ -6,4 +6,4 @@ key:
       proudct1: false
     - compName: comp-product2
       product2: true
-products: []
+products: {}

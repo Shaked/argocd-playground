@@ -7,3 +7,6 @@ key:
     - compName: comp-product2
       product2: true
 contexts: ["a", "b", "c"]
+products:
+  product1: false
+  product2: false

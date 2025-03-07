@@ -11,40 +11,55 @@ spec:
   generators:
     - matrix:
         generators:
-          - git:
-              repoURL: https://github.com/Shaked/argocd-playground
-              revision: main
-              files:
-                - path: argocd/appsets/infra/cluster-labels/config/**/argo.yaml
-              values:
-                packageName: "{{ index .path.segments 5 }}"
-                clusterPurpose: "{{ index .path.segments 6 }}"
-                environment: "{{ index .path.segments 7 }}"
-                appsetName: "infra-config"
-          - clusters:
-              selector:
-                matchLabels:
-                  argocd.argoproj.io/secret-type: cluster
-                  cluster-purpose: "{{ .values.clusterPurpose }}"
-                  environment: "{{ .values.environment }}"
-                  contexts: '{{ .contexts | join "," }}'
+          - matrix:
+              generators:
+                - git:
+                    repoURL: https://github.com/Shaked/argocd-playground
+                    revision: main
+                    files:
+                      - path: argocd/appsets/infra/cluster-labels/config/**/argo.yaml
+                    values:
+                      packageName: "{{ index .path.segments 5 }}"
+                      clusterPurpose: "{{ index .path.segments 6 }}"
+                      environment: "{{ index .path.segments 7 }}"
+                      appsetName: "infra-config"
+                - clusters:
+                    selector:
+                      matchLabels:
+                        argocd.argoproj.io/secret-type: cluster
+                        cluster-purpose: "{{ .values.clusterPurpose }}"
+                        environment: "{{ .values.environment }}"
+          - list:
+              elements:
+                # This returns
+                #   The value of `.products[.metadata.labels.product]` if exists
+                #   True if .products is set to []
+                #   True if .products is not set
+                - appEnabled: '{{ dig "products" (index .metadata.labels "product") (dig "products" true .) . }}'
+              # elementsYaml: "{{ .key.components | toJson }}"
+      # selector:
+      #   matchLabels:
+      #     appEnabled: "true"
       selector:
         matchExpressions:
-          - key: contexts
-            operator: In
+          - key: appEnabled
+            operator: NotIn
             values:
-              - test1
-              - test2
+              - "false"
   template:
     metadata:
       name: "infra-{{ .name }}-{{ .values.packageName }}"
       annotations:
         # See: https://argo-cd.readthedocs.io/en/stable/operator-manual/high_availability/#manifest-paths-annotation
         argocd.argoproj.io/manifest-generate-paths: .
+        products: '{{ dig "products" "" . | toJson }}'
+        product: '{{ index .metadata.labels "product" }}'
+        appEnabled: "{{ .appEnabled }}"
       labels:
         cluster-purpose: "{{ .values.clusterPurpose }}"
         environment: '{{ index .metadata.labels "environment" }}'
         region: '{{ index .metadata.labels "region" }}'
+        product: '{{ index .metadata.labels "product" }}'
         appset-name: "{{ .values.appsetName }}"
     spec:
       project: "infra"

@@ -75,6 +75,8 @@ spec:
               - "$values/values/infra/{{ .values.packageName }}/values.yaml"
               - "$values/values/infra/{{ .values.packageName }}/{{ .values.environment }}/values.yaml"
               - '$values/values/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "region" }}/values.yaml'
+              - '$values/values/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "product" }}/values.yaml'
+              - '$values/values/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "product" }}/{{ index .metadata.labels "region" }}/values.yaml'
               - '$values/values/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "region" }}/{{ .name }}/values.yaml'
         - repoURL: "https://github.com/Shaked/argocd-playground.git"
           targetRevision: HEAD

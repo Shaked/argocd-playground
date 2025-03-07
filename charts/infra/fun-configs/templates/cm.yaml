@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: example-configmap
 data:
-  example.property.1: "{{ .Values.property }}
+  example.property.1: "{{ .Values.property }}"

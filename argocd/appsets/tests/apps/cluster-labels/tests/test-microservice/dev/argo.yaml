@@ -1,4 +1,3 @@
 chartRepoUrl: https://github.com/Shaked/argocd-playground.git
-version: ac7066aef30edbb35a8341362f5250bef08362ad
+chartVersion: HEAD
 enabled: true
-namespace: app2

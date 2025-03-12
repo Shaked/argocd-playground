@@ -62,7 +62,7 @@ spec:
       project: "tests-infra"
       sources:
         - repoURL: "{{ .chartRepoUrl }}"
-          path: "charts/tests/infra/{{ .values.packageName }}"
+          path: "charts/infra/{{ .values.packageName }}"
 
           targetRevision: "{{ .chartVersion }}"
           helm:

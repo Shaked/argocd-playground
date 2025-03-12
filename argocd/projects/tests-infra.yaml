@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
-  name: p2
+  name: tests-infra
   namespace: argocd
 spec:
   clusterResourceWhitelist:
@@ -9,6 +9,6 @@ spec:
     kind: '*'
   destinations:
   - namespace: '*'
-    server: "k3d-*"
+    server: "*"
   sourceRepos:
   - '*'

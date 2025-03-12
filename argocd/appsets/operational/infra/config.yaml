@@ -17,11 +17,11 @@ spec:
                     repoURL: https://github.com/Shaked/argocd-playground
                     revision: main
                     files:
-                      - path: argocd/appsets/infra/cluster-labels/config/**/argo.yaml
+                      - path: argocd/appsets/operational/infra/cluster-labels/config/**/argo.yaml
                     values:
-                      packageName: "{{ index .path.segments 5 }}"
-                      clusterPurpose: "{{ index .path.segments 6 }}"
-                      environment: "{{ index .path.segments 7 }}"
+                      packageName: "{{ index .path.segments 6 }}"
+                      clusterPurpose: "{{ index .path.segments 7 }}"
+                      environment: "{{ index .path.segments 8 }}"
                       appsetName: "infra-config"
                 - clusters:
                     selector:
@@ -69,12 +69,12 @@ spec:
             releaseName: '{{ dig "releaseName" (printf "%s" (.values.packageName)) . }}'
             ignoreMissingValueFiles: true
             valueFiles:
-              - "$values/values/infra/{{ .values.packageName }}/values.yaml"
-              - "$values/values/infra/{{ .values.packageName }}/{{ .values.environment }}/values.yaml"
-              - '$values/values/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "region" }}/values.yaml'
-              - '$values/values/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "product" }}/values.yaml'
-              - '$values/values/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "product" }}/{{ index .metadata.labels "region" }}/values.yaml'
-              - '$values/values/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "region" }}/{{ .name }}/values.yaml'
+              - "$values/values/operational/infra/{{ .values.packageName }}/values.yaml"
+              - "$values/values/operational/infra/{{ .values.packageName }}/{{ .values.environment }}/values.yaml"
+              - '$values/values/operational/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "region" }}/values.yaml'
+              - '$values/values/operational/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "product" }}/values.yaml'
+              - '$values/values/operational/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "product" }}/{{ index .metadata.labels "region" }}/values.yaml'
+              - '$values/values/operational/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "region" }}/{{ .name }}/values.yaml'
         - repoURL: "https://github.com/Shaked/argocd-playground.git"
           targetRevision: HEAD
           ref: values

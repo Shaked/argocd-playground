@@ -18,10 +18,16 @@ spec:
       path: "argocd/projects"
       targetRevision: main
     - repoURL: 'https://github.com/Shaked/argocd-playground'
-      path: "argocd/appsets/infra"
+      path: "argocd/appsets/operational/infra"
       targetRevision: main
     - repoURL: 'https://github.com/Shaked/argocd-playground'
-      path: "argocd/appsets/apps"
+      path: "argocd/appsets/operational/apps"
+      targetRevision: main
+    - repoURL: 'https://github.com/Shaked/argocd-playground'
+      path: "argocd/appsets/tests/infra"
+      targetRevision: main
+    - repoURL: 'https://github.com/Shaked/argocd-playground'
+      path: "argocd/appsets/tests/apps"
       targetRevision: main
   destination:
     namespace: argocd

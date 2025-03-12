@@ -15,11 +15,11 @@ spec:
               repoURL: https://github.com/Shaked/argocd-playground
               revision: main
               files:
-                - path: argocd/appsets/apps/cluster-labels/**/argo.yaml
+                - path: argocd/appsets/operational/apps/cluster-labels/**/argo.yaml
               values:
-                product: "{{ index .path.segments 4 }}"
-                packageName: "{{ index .path.segments 5 }}"
-                environment: "{{ index .path.segments 6 }}"
+                product: "{{ index .path.segments 5 }}"
+                packageName: "{{ index .path.segments 6 }}"
+                environment: "{{ index .path.segments 7 }}"
                 appsetName: "apps"
           - clusters:
               selector:
@@ -49,10 +49,10 @@ spec:
             releaseName: '{{ dig "releaseName" (printf "%s-%s" (.values.product) (.values.packageName)) . }}'
             ignoreMissingValueFiles: true
             valueFiles:
-              - "$values/values/apps/{{ .values.product }}/{{ .values.packageName }}/values.yaml"
-              - "$values/values/apps/{{ .values.product }}/{{ .values.packageName }}/{{ .values.environment }}/values.yaml"
-              - '$values/values/apps/{{ .values.product }}/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "region" }}/values.yaml'
-              - '$values/values/apps/{{ .values.product }}/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "region" }}/{{ .name }}/values.yaml'
+              - "$values/values/operational/apps/{{ .values.product }}/{{ .values.packageName }}/values.yaml"
+              - "$values/values/operational/apps/{{ .values.product }}/{{ .values.packageName }}/{{ .values.environment }}/values.yaml"
+              - '$values/values/operational/apps/{{ .values.product }}/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "region" }}/values.yaml'
+              - '$values/values/operational/apps/{{ .values.product }}/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "region" }}/{{ .name }}/values.yaml'
         - repoURL: '{{ dig "valuesVersion" (printf "%s" (.chartRepoUrl)) . }}'
           targetRevision: '{{ dig "valuesVersion" "main" . }}'
           ref: values

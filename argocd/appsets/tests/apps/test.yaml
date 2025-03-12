@@ -58,7 +58,7 @@ spec:
           ref: values
       destination:
         server: "{{ .server }}"
-        namespace: '{{ dig "namespace" (printf "%s" (.values.product)) . }}'
+        namespace: '{{ dig "namespace" (printf "%s" (.values.appsetName)) . }}'
   templatePatch: |
     spec:
       syncPolicy:

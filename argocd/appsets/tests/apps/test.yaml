@@ -15,7 +15,7 @@ spec:
               repoURL: https://github.com/Shaked/argocd-playground
               revision: main
               files:
-                - path: argocd/appsets/tests/apps/cluster-labels/**/argo.yaml
+                - path: argocd/appsets/tests/tests/cluster-labels/**/argo.yaml
               values:
                 product: "{{ index .path.segments 5 }}"
                 packageName: "{{ index .path.segments 6 }}"

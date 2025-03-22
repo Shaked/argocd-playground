@@ -1,5 +1,5 @@
-
-
+# 12 hours in seconds
+activeDeadlineSeconds: 43200
 replicaCount: 1
 
 image:

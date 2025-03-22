@@ -5,6 +5,8 @@ metadata:
   labels:
     {{- include "debug.labels" . | nindent 4 }}
 spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: {{ .Values.activeDeadlineSeconds }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -59,4 +61,4 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      restartPolicy: OnFailure
+      restartPolicy: Never

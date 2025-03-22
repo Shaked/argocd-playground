@@ -61,6 +61,10 @@ volumes: []
 volumeMounts: []
 
 nodeSelector: {}
+command:
+- sleep
+args:
+- 360
 
 tolerations: []
 

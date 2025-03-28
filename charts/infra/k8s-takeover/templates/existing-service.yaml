@@ -3,3 +3,6 @@ kind: Service
 metadata:
   name: kubernetes
   namespace: default
+  annotations:
+    b1lahblah: "some annotation"
+    b2lahblah2: "some annotation2"

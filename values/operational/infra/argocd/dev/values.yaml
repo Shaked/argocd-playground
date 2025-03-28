@@ -1,3 +1,4 @@
 configs:
   cm:
     application.resourceTrackingMethod: annotation
+    kustomize.buildOptions: --load-restrictor LoadRestrictionsNone

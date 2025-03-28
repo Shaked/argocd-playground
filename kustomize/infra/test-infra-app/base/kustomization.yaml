@@ -1,5 +1,6 @@
 resources:
   - configmap-test-mock.yaml
+  - existing-service.yaml
 patches:
   - target:
       group: ""
@@ -8,3 +9,10 @@ patches:
       name: configmap-test
       namespace: default
     path: patch.yaml
+  - target:
+      group: ""
+      version: v1
+      kind: Service
+      name: kubernetes
+      namespace: default
+    path: kubernetes-patch.yaml

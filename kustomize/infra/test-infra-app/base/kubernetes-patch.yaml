@@ -1,0 +1,12 @@
+- op: add
+  path: /metadata/annotations/blahblah
+  value: >
+    {
+      "test": "some annotation"
+    }
+- op: add
+  path: /metadata/annotations/blahblah2
+  value: >
+    {
+      "test": "some annotation2"
+    }

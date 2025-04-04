@@ -2,12 +2,17 @@ configs:
   cm:
     application.resourceTrackingMethod: annotation
     kustomize.buildOptions: --load-restrictor LoadRestrictionsNone
-    accounts.test: apiKey, login
+    accounts.team1: apiKey, login
+    accounts.team2: apiKey, login
   rbac:
     scopes: '[email,groups]'
     policy.csv: |
-      g, test, role:special
-      p, role:special, projects, apps, get, allow
-      p, role:special, applications, apps-*-*-app1-*, get, allow
-      p, role:special, applications, apps-*-*-app1-*, sync, allow
-      p, role:special, logs, apps-*-*-app1-*, get, allow
+      g, team1, role:special1
+      p, role:special1, projects, get, apps, allow
+      p, role:special1, applications, get, apps-*-*-app1-*, allow
+      p, role:special1, applications, sync, apps-*-*-app1-*, allow
+      p, role:special1, logs, get, apps-*-*-app1-*, allow
+      g, team2, role:special2
+      p, role:special2, projects, get, apps, allow
+      p, role:special2, applications, get, apps-*-*-app2-*, allow
+      p, role:special2, logs, get, apps-*-*-app2-*, allow

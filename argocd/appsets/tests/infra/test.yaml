@@ -49,7 +49,7 @@ spec:
       annotations:
         # See: https://argo-cd.readthedocs.io/en/stable/operator-manual/high_availability/#manifest-paths-annotation
         argocd.argoproj.io/manifest-generate-paths: .
-        products: '{{ dig "products" "" . | toJson }}'
+        products: '{{ dig "products" dict . | toJson }}'
         product: '{{ index .metadata.labels "product" }}'
         appEnabled: "{{ .appEnabled }}"
       labels:

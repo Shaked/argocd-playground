@@ -52,7 +52,7 @@ spec:
         products: '{{ dig "products" dict . | toJson }}'
         product: '{{ index .metadata.labels "product" }}'
         appEnabled: "{{ .appEnabled }}"
-        namespace: '{{ dig "namespace" (printf "%s" (.values.product)) . }}'
+        namespace: '{{ dig "namespace" (printf "%s" (.values.appsetName)) . }}'
       labels:
         cluster-purpose: "{{ .values.clusterPurpose }}"
         environment: '{{ index .metadata.labels "environment" }}'

@@ -3,3 +3,4 @@ chartVersion: HEAD
 products:
   product1: false
   product2: false
+namespace: test-argocd-xyz

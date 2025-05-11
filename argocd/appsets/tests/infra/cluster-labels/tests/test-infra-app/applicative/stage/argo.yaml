@@ -3,3 +3,4 @@ chartVersion: HEAD
 products:
   product1: true
   product2: false
+namespace: test-xyz

@@ -46,13 +46,13 @@ spec:
   template:
     metadata:
       name: "tests-infra-test-{{ .name }}-{{ .values.packageName }}"
-      namespace: '{{ dig "namespace" (printf "%s" (.values.appsetName)) . }}'
       annotations:
         # See: https://argo-cd.readthedocs.io/en/stable/operator-manual/high_availability/#manifest-paths-annotation
         argocd.argoproj.io/manifest-generate-paths: .
         products: '{{ dig "products" dict . | toJson }}'
         product: '{{ index .metadata.labels "product" }}'
         appEnabled: "{{ .appEnabled }}"
+        namespace: '{{ dig "namespace" (printf "%s" (.values.product)) . }}'
       labels:
         cluster-purpose: "{{ .values.clusterPurpose }}"
         environment: '{{ index .metadata.labels "environment" }}'

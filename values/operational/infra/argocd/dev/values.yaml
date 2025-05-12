@@ -9,14 +9,14 @@ configs:
     policy.csv: |
       g, team1, role:special1
       p, role:special1, projects, get, apps, allow
-      p, role:special1, applications, get, apps-*-*-app1-*, allow
-      p, role:special1, applications, sync, apps-*-*-app1-*, allow
-      p, role:special1, logs, get, apps-*-*-app1-*, allow
+      p, role:special1, applications, get, apps/apps-*-*-app1-*, allow
+      p, role:special1, applications, sync, apps/apps-*-*-app1-*, allow
+      p, role:special1, logs, get, apps/apps-*-*-app1-*, allow
       # Deny access to any application with in-cluster in the name
-      p, role:special1, applications, get, apps-*-in-cluster-app1-*, deny
-      p, role:special1, applications, sync, apps-*-in-cluster-app1-*, deny
-      p, role:special1, logs, get, apps-*-in-cluster-app1-*, deny
+      p, role:special1, applications, get, apps/apps-*-in-cluster-app1-*, deny
+      p, role:special1, applications, sync, apps/apps-*-in-cluster-app1-*, deny
+      p, role:special1, logs, get, apps/apps-*-in-cluster-app1-*, deny
       g, team2, role:special2
       p, role:special2, projects, get, apps, allow
-      p, role:special2, applications, get, apps-*-*-app2-*, allow
-      p, role:special2, logs, get, apps-*-*-app2-*, allow
+      p, role:special2, applications, get, apps/apps-*-*-app2-*, allow
+      p, role:special2, logs, get, apps/apps-*-*-app2-*, allow

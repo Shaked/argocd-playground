@@ -1,0 +1,57 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: time-echo-job-
+  labels:
+    app: time-echo
+spec:
+  template:
+    metadata:
+      labels:
+        app: time-echo
+    spec:
+      containers:
+      - name: time-echo-container
+        image: busybox:latest
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            echo "Starting time-echo job..."
+            i=0
+            while [ $i -lt 3 ]; do
+              echo "$(date): Running iteration $(($i+1))/3"
+              sleep 5
+              i=$(($i+1))
+            done
+            echo "$(date): Job finished after approximately 15 seconds."
+      restartPolicy: Never
+  backoffLimit: 0
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: time-echo-permanent-name
+  labels:
+    app: time-echo
+spec:
+  template:
+    metadata:
+      labels:
+        app: time-echo
+    spec:
+      containers:
+      - name: time-echo-container
+        image: busybox:latest
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            echo "Starting time-echo job..."
+            i=0
+            while [ $i -lt 3 ]; do
+              echo "$(date): Running iteration $(($i+1))/3"
+              sleep 5
+              i=$(($i+1))
+            done
+            echo "$(date): Job finished after approximately 15 seconds."
+      restartPolicy: Never
+  backoffLimit: 0

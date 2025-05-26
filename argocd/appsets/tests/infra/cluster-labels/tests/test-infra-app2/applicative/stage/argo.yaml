@@ -1,6 +1,6 @@
 chartRepoUrl: https://github.com/Shaked/argocd-playground.git
 chartVersion: HEAD
-packageName: charts/infra/test-infra-app
+packagePath: charts/infra/test-infra-app
 products:
   product1: true
   product2: false

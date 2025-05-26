@@ -4,4 +4,4 @@ products:
   product1: false
   product2: false
 namespace: test-argocd-xyz
-packageName: charts/infra/test-infra-app
+packagePath: charts/infra/test-infra-app

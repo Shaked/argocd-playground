@@ -63,8 +63,7 @@ spec:
       project: "tests-infra-beta"
       sources:
         - repoURL: "{{ .chartRepoUrl }}"
-          path: "charts/infra/{{ .values.packageName }}"
-
+          path: '{{ dig "packagePath" (printf "charts/infra/%s" (.values.packageName)) . }}'
           targetRevision: "{{ .chartVersion }}"
           helm:
             releaseName: '{{ dig "releaseName" (printf "%s" (.values.packageName)) . }}'

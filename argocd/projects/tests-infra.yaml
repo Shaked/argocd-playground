@@ -4,11 +4,22 @@ metadata:
   name: tests-infra
   namespace: argocd
 spec:
+  clusterResourceBlacklist:
+  - group: '*'
+    kind: 'PriorityClass'
+  - group: '*'
+    kind: "StorageClass"
+  - group: '*'
+    kind: "ResourceQuota"
+  - group: '*'
+    kind: "LimitRange"
   clusterResourceWhitelist:
   - group: '*'
     kind: '*'
   destinations:
-  - namespace: '*'
+  - namespace: 'myprefix-*'
+    server: "*"
+  - namespace: 'app1'
     server: "*"
   sourceRepos:
   - '*'

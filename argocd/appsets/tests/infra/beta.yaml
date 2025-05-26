@@ -17,7 +17,7 @@ spec:
                     repoURL: https://github.com/Shaked/argocd-playground
                     revision: main
                     files:
-                      - path: argocd/appsets/tests/infra/cluster-labels/tests/**/argo.yaml
+                      - path: argocd/appsets/tests/infra/cluster-labels/beta/**/argo.yaml
                     values:
                       packageName: "{{ index .path.segments 6 }}"
                       clusterPurpose: "{{ index .path.segments 7 }}"
@@ -60,7 +60,7 @@ spec:
         product: '{{ index .metadata.labels "product" }}'
         appset-name: "{{ .values.appsetName }}"
     spec:
-      project: "tests-infra"
+      project: "tests-infra-beta"
       sources:
         - repoURL: "{{ .chartRepoUrl }}"
           path: "charts/infra/{{ .values.packageName }}"

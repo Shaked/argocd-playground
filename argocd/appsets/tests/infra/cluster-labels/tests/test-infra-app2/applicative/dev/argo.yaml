@@ -1,0 +1,5 @@
+chartRepoUrl: https://github.com/Shaked/argocd-playground.git
+chartVersion: HEAD
+products: {}
+namespace: myprefix-xyz
+packageName: test-infra-app

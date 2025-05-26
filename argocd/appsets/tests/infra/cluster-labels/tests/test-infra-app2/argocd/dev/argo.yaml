@@ -1,3 +1,4 @@
 chartRepoUrl: https://github.com/Shaked/argocd-playground.git
 chartVersion: HEAD
-namespace: test-argocd-xyz
+namespace: myprefix-argocd-xyz
+packageName: test-infra-app

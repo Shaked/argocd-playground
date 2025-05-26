@@ -3,4 +3,5 @@ chartVersion: HEAD
 products:
   product1: false
   product2: false
-namespace: test-argocd-xyz
+namespace: myprefix-argocd-xyz
+packageName: test-infra-app

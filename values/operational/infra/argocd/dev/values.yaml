@@ -4,6 +4,7 @@ configs:
     kustomize.buildOptions: --load-restrictor LoadRestrictionsNone
     accounts.team1: apiKey, login
     accounts.team2: apiKey, login
+    accounts.team3-test: apiKey, login
   rbac:
     scopes: '[email,groups]'
     policy.csv: |
@@ -19,3 +20,8 @@ configs:
       p, role:special2, projects, get, apps, allow
       p, role:special2, applications, get, apps/apps-*-*-app2-*, allow
       p, role:special2, logs, get, apps/apps-*-*-app2-*, allow
+      g, team3-test, role:special3-test
+      p, role:special3-test, projects, get, apps, allow
+      p, role:special3-test, applications, get, apps/apps-*-*-app3-test-*, allow
+      p, role:special3-test, logs, get, apps/apps-*-*-app3-test-*, allow
+      p, role:special3-test, applications, action/*, apps/apps-*-*-app3-test-*, allow

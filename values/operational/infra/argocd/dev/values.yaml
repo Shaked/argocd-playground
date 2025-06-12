@@ -25,5 +25,4 @@ configs:
       p, role:special3-test, applications, get, apps/apps-*-*-app2-*, allow
       p, role:special3-test, applications, logs, apps/apps-*-*-app2-*, allow
       p, role:special3-test, logs, get, apps/apps-*-*-app2-*, allow
-      p, role:special3-test, applications, delete/*/Pod/*/*, apps/apps-*-*-app2-*, allow
-      p, role:special3-test, applications, delete/*/Secret/*/*, apps/apps-*-*-app2-*, allow
+      p, role:special3-test, applications, delete/*/*/*/*, apps/apps-*-*-app2-*, allow

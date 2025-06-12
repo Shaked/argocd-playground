@@ -22,6 +22,6 @@ configs:
       p, role:special2, logs, get, apps/apps-*-*-app2-*, allow
       g, team3-test, role:special3-test
       p, role:special3-test, projects, get, apps, allow
-      p, role:special3-test, applications, get, apps/apps-*-*-app2-test-*, allow
-      p, role:special3-test, logs, get, apps/apps-*-*-app2-test-*, allow
-      p, role:special3-test, applications, action/*, apps/apps-*-*-app2-test-*, allow
+      p, role:special3-test, applications, get, apps/apps-*-*-app2-*, allow
+      p, role:special3-test, logs, get, apps/apps-*-*-app2-*, allow
+      p, role:special3-test, applications, action/*, apps/apps-*-*-app2-*, allow

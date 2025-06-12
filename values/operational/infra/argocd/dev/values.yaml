@@ -23,5 +23,7 @@ configs:
       g, team3-test, role:special3-test
       p, role:special3-test, projects, get, apps, allow
       p, role:special3-test, applications, get, apps/apps-*-*-app2-*, allow
+      p, role:special3-test, applications, logs, apps/apps-*-*-app2-*, allow
       p, role:special3-test, logs, get, apps/apps-*-*-app2-*, allow
-      p, role:special3-test, applications, action/*, apps/apps-*-*-app2-*, allow
+      p, role:special3-test, applications, delete/*/Pod/*/*, apps/apps-*-*-app2-*, allow
+      p, role:special3-test, applications, delete/*/Secret/*/*, apps/apps-*-*-app2-*, allow

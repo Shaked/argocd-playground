@@ -105,3 +105,10 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+secretStore:
+  name: my-secret-store
+  kind: ClusterSecretStore
+  username: my-username
+  password: my-password
+  path: /my-path

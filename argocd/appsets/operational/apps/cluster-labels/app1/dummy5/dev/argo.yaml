@@ -2,3 +2,7 @@ chartRepoUrl: https://github.com/Shaked/argocd-playground.git
 chartVersion: HEAD
 enabled: true
 namespace: app1-canary
+ignoreDifferences:
+- group: generators.external-secrets.io
+  kind: Fake
+  name: fake-key

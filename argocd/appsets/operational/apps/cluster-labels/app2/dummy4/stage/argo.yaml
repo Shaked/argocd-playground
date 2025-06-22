@@ -1,3 +1,7 @@
 chartRepoUrl: https://github.com/Shaked/argocd-playground.git
 chartVersion: HEAD
 namespace: app2
+ignoreDifferences:
+- group: generators.external-secrets.io
+  kind: Fake
+  name: fake-key

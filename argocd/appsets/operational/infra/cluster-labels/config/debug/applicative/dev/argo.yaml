@@ -3,5 +3,5 @@ chartVersion: HEAD
 namespace: debug
 autoSync:
   enabled: false
-clusterEnabled:
-  k3d-810c8c12: false
+clusterNameDisabled:
+  k3d-810c8c12: true

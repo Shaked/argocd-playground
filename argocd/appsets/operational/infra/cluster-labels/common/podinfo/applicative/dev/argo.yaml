@@ -3,5 +3,5 @@ chartVersion: "6.8.0"
 helmPackageName: podinfo
 releaseName: "test-podinfo"
 serverSideApply: true
-overrideVersions:
+chartVersionOverrideByClusterName:
   k3d-810c8c12: 6.9.0

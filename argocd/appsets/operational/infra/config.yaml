@@ -37,19 +37,19 @@ spec:
                 #   True if .products is set to []
                 #   True if .products is not set
                 - appEnabled: '{{ dig "products" (index .metadata.labels "product") (eq (len (dig "products" dict .)) 0) . }}'
-                  clusterNameDisabled: '{{ dig "clusterNameDisabled" (.name) "false" . }}'
-                  clusterGroupDisabled: '{{ dig "clusterGroupDisabled" (index .metadata.labels "cluster-group") "false" . }}'
+                  appClusterNameDisabled: '{{ dig "clusterNameDisabled" (.name) "false" . }}'
+                  appClusterGroupDisabled: '{{ dig "clusterGroupDisabled" (index .metadata.labels "cluster-group") "false" . }}'
       selector:
         matchExpressions:
           - key: appEnabled
             operator: NotIn
             values:
               - "false"
-          - key: clusterNameDisabled
+          - key: appClusterNameDisabled
             operator: NotIn
             values:
               - "true"
-          - key: clusterGroupDisabled
+          - key: appClusterGroupDisabled
             operator: NotIn
             values:
               - "true"
@@ -62,6 +62,10 @@ spec:
         products: '{{ dig "products" "" . | toJson }}'
         product: '{{ index .metadata.labels "product" }}'
         appEnabled: "{{ .appEnabled }}"
+        clusterNameDisabled: "{{ .clusterNameDisabled | toJson }}"
+        clusterGroupDisabled: "{{ .clusterGroupDisabled | toJson }}"
+        appClusterNameDisabled: "{{ .appClusterNameDisabled }}"
+        appClusterGroupDisabled: "{{ .appClusterGroupDisabled }}"
       labels:
         cluster-purpose: "{{ .values.clusterPurpose }}"
         environment: '{{ index .metadata.labels "environment" }}'

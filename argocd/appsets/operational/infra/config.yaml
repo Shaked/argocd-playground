@@ -37,8 +37,8 @@ spec:
                 #   True if .products is set to []
                 #   True if .products is not set
                 - appEnabled: '{{ dig "products" (index .metadata.labels "product") (eq (len (dig "products" dict .)) 0) . }}'
-                  clusterNameDisabled: '{{ dig "clusterNameDisabled" (index .metadata.labels "cluster") (eq (len (dig "clusterNameDisabled" dict .)) 0) . }}'
-                  clusterGroupDisabled: '{{ dig "clusterGroupDisabled" (index .metadata.labels "cluster-group") (eq (len (dig "clusterGroupDisabled" dict .)) 0) . }}'
+                  clusterNameDisabled: '{{ dig "clusterNameDisabled" (index .metadata.labels "cluster") "false" . }}'
+                  clusterGroupDisabled: '{{ dig "clusterGroupDisabled" (index .metadata.labels "cluster-group") "false" . }}'
       selector:
         matchExpressions:
           - key: appEnabled

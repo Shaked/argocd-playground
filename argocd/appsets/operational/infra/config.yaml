@@ -28,7 +28,7 @@ spec:
                       matchLabels:
                         argocd.argoproj.io/secret-type: cluster
                         cluster-purpose: "{{ .values.clusterPurpose }}"
-                        environment-"{{ .values.environment }}": "true"
+                        environment-{{ .values.environment }}: "true"
           - list:
               elements:
                 # This returns

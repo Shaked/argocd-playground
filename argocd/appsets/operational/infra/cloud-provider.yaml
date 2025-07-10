@@ -28,7 +28,7 @@ spec:
               argocd.argoproj.io/secret-type: cluster
               cloud-provider: '{{ .values.cloudProvider }}'
               cluster-purpose: '{{ .values.clusterPurpose }}'
-              environment-"{{ .values.environment }}": "true"
+              environment-{{ .values.environment }}: "true"
   template:
     metadata:
       name: 'infra-{{ .name }}-{{ .values.environment }}-{{ .values.packageName }}-{{ .values.cloudProvider }}'

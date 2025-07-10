@@ -26,7 +26,7 @@ spec:
             matchLabels:
               argocd.argoproj.io/secret-type: cluster
               cluster-purpose: '{{ .values.clusterPurpose }}'
-              environment: '{{ .values.environment }}'
+              environment-"{{ .values.environment }}": "true"
   template:
     metadata:
       name: 'infra-{{ .name }}-{{ .values.environment }}-{{ .values.packageName }}'

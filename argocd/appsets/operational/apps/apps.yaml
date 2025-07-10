@@ -25,7 +25,7 @@ spec:
               selector:
                 matchLabels:
                   argocd.argoproj.io/secret-type: cluster
-                  environment: "{{ .values.environment }}"
+                  environment-"{{ .values.environment }}": "true"
                   product-{{ .values.product }}: '{{ dig "enabled" (true) . }}'
   template:
     metadata:

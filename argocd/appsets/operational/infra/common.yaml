@@ -43,7 +43,7 @@ spec:
       sources:
       - repoURL: "{{ .chartRepoUrl }}"
         chart : '{{ dig "packagePathOrName" (printf "%s" (.values.packageName)) . }}'
-        targetRevision: "{{ .chartVersion }}"
+        targetRevision: '{{ dig "chartVersionOverrideByClusterName" (name) (printf "%s" (.chartVersion)) . }}'
         helm:
           releaseName: '{{ dig "releaseName" (printf "%s" (.values.packageName)) . }}'
           ignoreMissingValueFiles: true

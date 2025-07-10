@@ -2,3 +2,5 @@ chartRepoUrl: https://charts.external-secrets.io
 chartVersion: "0.17.0"
 isGit: true
 packagePath: charts/infra/git-override
+chartVersionOverrideByClusterName:
+  k3d-810c8c12: 0.16.2

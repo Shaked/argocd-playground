@@ -63,7 +63,6 @@ spec:
       sources:
         - repoURL: "{{ .chartRepoUrl }}"
           path: "charts/infra/{{ .values.packageName }}"
-
           targetRevision: "{{ .chartVersion }}"
           helm:
             releaseName: '{{ dig "releaseName" (printf "%s" (.values.packageName)) . }}'

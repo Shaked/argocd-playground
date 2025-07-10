@@ -31,13 +31,14 @@ spec:
               environment: '{{ .values.environment }}'
   template:
     metadata:
-      name: 'infra-{{ .name }}-{{ .values.packageName }}-{{ .values.cloudProvider }}'
+      name: 'infra-{{ .name }}-{{ .values.environment }}-{{ .values.packageName }}-{{ .values.cloudProvider }}'
       labels:
         cloud-provider: '{{ .values.cloudProvider }}'
         cluster-purpose: '{{ .values.clusterPurpose }}'
         environment: '{{ index .metadata.labels "environment" }}'
         region: '{{ index .metadata.labels "region" }}'
         appset-name: '{{ .values.appsetName }}'
+        package-name: '{{ .values.packageName }}'
     spec:
       project: "infra"
       sources:

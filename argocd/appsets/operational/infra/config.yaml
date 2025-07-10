@@ -62,10 +62,8 @@ spec:
         products: '{{ dig "products" "" . | toJson }}'
         product: '{{ index .metadata.labels "product" }}'
         appEnabled: "{{ .appEnabled }}"
-        clusterNameDisabled: "{{ .clusterNameDisabled | toJson }}"
-        clusterGroupDisabled: "{{ .clusterGroupDisabled | toJson }}"
-        appClusterNameDisabled: "{{ .appClusterNameDisabled }}"
-        appClusterGroupDisabled: "{{ .appClusterGroupDisabled }}"
+        appClusterNameDisabled: '{{ dig "clusterNameDisabled" (.name) "false" . }}'
+        appClusterGroupDisabled: '{{ dig "clusterGroupDisabled" (index .metadata.labels "cluster-group") "false" . }}'
       labels:
         cluster-purpose: "{{ .values.clusterPurpose }}"
         environment: '{{ index .metadata.labels "environment" }}'

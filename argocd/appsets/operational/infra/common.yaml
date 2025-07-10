@@ -39,6 +39,7 @@ spec:
         region: '{{ index .metadata.labels "region" }}'
         appset-name: '{{ .values.appsetName }}'
         package-name: '{{ .values.packageName }}'
+        chart-name: '{{ dig "packagePathOrName" (printf "%s" (.values.packageName)) . }}'
     spec:
       project: "infra"
       sources:

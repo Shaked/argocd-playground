@@ -37,17 +37,22 @@ spec:
                 #   True if .products is set to []
                 #   True if .products is not set
                 - appEnabled: '{{ dig "products" (index .metadata.labels "product") (eq (len (dig "products" dict .)) 0) . }}'
-                  clusterEnabled: '{{ dig "clusterEnabled" (index .metadata.labels "cluster") (eq (len (dig "clusterEnabled" dict .)) 0) . }}'
+                  clusterNameDisabled: '{{ dig "clusterNameDisabled" (index .metadata.labels "cluster") (eq (len (dig "clusterNameDisabled" dict .)) 0) . }}'
+                  clusterGroupDisabled: '{{ dig "clusterGroupDisabled" (index .metadata.labels "cluster-group") (eq (len (dig "clusterGroupDisabled" dict .)) 0) . }}'
       selector:
         matchExpressions:
           - key: appEnabled
             operator: NotIn
             values:
               - "false"
-          - key: clusterEnabled
+          - key: clusterNameDisabled
             operator: NotIn
             values:
-              - "false"
+              - "true"
+          - key: clusterGroupDisabled
+            operator: NotIn
+            values:
+              - "true"
   template:
     metadata:
       name: "infra-{{ .name }}-{{ .values.environment }}-{{ .values.packageName }}"

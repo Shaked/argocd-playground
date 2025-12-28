@@ -1,0 +1,21 @@
+---
+# Source: dummy1/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "app1-dummy1-test-connection"
+  labels:
+    helm.sh/chart: dummy1-0.1.0
+    app.kubernetes.io/name: dummy1
+    app.kubernetes.io/instance: app1-dummy1
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['app1-dummy1:80']
+  restartPolicy: Never

@@ -1,0 +1,68 @@
+---
+# Source: dummy1/templates/illegal-manifests.yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: app1-dummy1
+  labels:
+    helm.sh/chart: dummy1-0.1.0
+    app.kubernetes.io/name: dummy1
+    app.kubernetes.io/instance: app1-dummy1
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: dummy1
+      app.kubernetes.io/instance: app1-dummy1
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: dummy1
+              app.kubernetes.io/instance: app1-dummy1
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: dummy1
+              app.kubernetes.io/instance: app1-dummy1
+---
+# Source: dummy1/templates/illegal-manifests.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: app1-dummy1
+  labels:
+    helm.sh/chart: dummy1-0.1.0
+    app.kubernetes.io/name: dummy1
+    app.kubernetes.io/instance: app1-dummy1
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+---
+# Source: dummy1/templates/illegal-manifests.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: app1-dummy1
+  labels:
+    helm.sh/chart: dummy1-0.1.0
+    app.kubernetes.io/name: dummy1
+    app.kubernetes.io/instance: app1-dummy1
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+subjects:
+- kind: ServiceAccount
+  name: app1-dummy1
+  namespace: kargo-demo
+roleRef:
+  kind: ClusterRole
+  name: app1-dummy1
+  apiGroup: rbac.authorization.k8s.io

@@ -1,0 +1,283 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: infra-config-local
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+  generators:
+    - matrix:
+        generators:
+          - matrix:
+              generators:
+                # List generator replaces git generator - path: argocd/appsets/operational/infra/cluster-labels/config/**/argo.yaml
+                - list:
+                    elements:
+                      # debug/applicative/dev
+                      - values:
+                          packageName: "debug"
+                          clusterPurpose: "applicative"
+                          environment: "dev"
+                          appsetName: "infra-config-local"
+                        chartRepoUrl: https://github.com/Shaked/argocd-playground.git
+                        chartVersion: HEAD
+                        namespace: debug
+                        autoSync:
+                          enabled: false
+                        clusterNameDisabled:
+                          k3d-810c8c12: true
+                      # debug/applicative/stage
+                      - values:
+                          packageName: "debug"
+                          clusterPurpose: "applicative"
+                          environment: "stage"
+                          appsetName: "infra-config-local"
+                        chartRepoUrl: https://github.com/Shaked/argocd-playground.git
+                        chartVersion: HEAD
+                        namespace: debug
+                        autoSync:
+                          enabled: false
+                        clusterNameDisabled:
+                          k3d-810c8c12: false
+                      # debug/argocd/dev
+                      - values:
+                          packageName: "debug"
+                          clusterPurpose: "argocd"
+                          environment: "dev"
+                          appsetName: "infra-config-local"
+                        chartRepoUrl: https://github.com/Shaked/argocd-playground.git
+                        chartVersion: HEAD
+                        namespace: debug
+                        autoSync:
+                          enabled: false
+                      # debug/argocd/stage
+                      - values:
+                          packageName: "debug"
+                          clusterPurpose: "argocd"
+                          environment: "stage"
+                          appsetName: "infra-config-local"
+                        chartRepoUrl: https://github.com/Shaked/argocd-playground.git
+                        chartVersion: HEAD
+                        namespace: debug
+                        autoSync:
+                          enabled: false
+                      # fun-configs/applicative/dev
+                      - values:
+                          packageName: "fun-configs"
+                          clusterPurpose: "applicative"
+                          environment: "dev"
+                          appsetName: "infra-config-local"
+                        chartRepoUrl: https://github.com/Shaked/argocd-playground.git
+                        chartVersion: HEAD
+                        products: {}
+                      # fun-configs/applicative/stage
+                      - values:
+                          packageName: "fun-configs"
+                          clusterPurpose: "applicative"
+                          environment: "stage"
+                          appsetName: "infra-config-local"
+                        chartRepoUrl: https://github.com/Shaked/argocd-playground.git
+                        chartVersion: HEAD
+                        products:
+                          product1: true
+                          product2: false
+                      # fun-configs/argocd/dev
+                      - values:
+                          packageName: "fun-configs"
+                          clusterPurpose: "argocd"
+                          environment: "dev"
+                          appsetName: "infra-config-local"
+                        chartRepoUrl: https://github.com/Shaked/argocd-playground.git
+                        chartVersion: HEAD
+                      # fun-configs/argocd/stage
+                      - values:
+                          packageName: "fun-configs"
+                          clusterPurpose: "argocd"
+                          environment: "stage"
+                          appsetName: "infra-config-local"
+                        chartRepoUrl: https://github.com/Shaked/argocd-playground.git
+                        chartVersion: HEAD
+                        products:
+                          product1: false
+                          product2: false
+                      # external-secrets-config/applicative/dev
+                      - values:
+                          packageName: "external-secrets-config"
+                          clusterPurpose: "applicative"
+                          environment: "dev"
+                          appsetName: "infra-config-local"
+                        chartRepoUrl: https://github.com/Shaked/argocd-playground.git
+                        chartVersion: HEAD
+                        key:
+                          components:
+                            - compName: comp-product1
+                              proudct1: false
+                            - compName: comp-product2
+                              product2: true
+                        products:
+                          product1: true
+                          product2: true
+                        contexts: ["a", "b", "c"]
+                      # external-secrets-config/applicative/stage
+                      - values:
+                          packageName: "external-secrets-config"
+                          clusterPurpose: "applicative"
+                          environment: "stage"
+                          appsetName: "infra-config-local"
+                        chartRepoUrl: https://github.com/Shaked/argocd-playground.git
+                        chartVersion: HEAD
+                        key:
+                          components:
+                            - compName: comp-product1
+                              proudct1: true
+                            - compName: comp-product2
+                              product2: true
+                        contexts: ["a", "b", "c"]
+                        products:
+                          product1: true
+                          product2: false
+                      # external-secrets-config/argocd/dev
+                      - values:
+                          packageName: "external-secrets-config"
+                          clusterPurpose: "argocd"
+                          environment: "dev"
+                          appsetName: "infra-config-local"
+                        chartRepoUrl: https://github.com/Shaked/argocd-playground.git
+                        chartVersion: HEAD
+                        key:
+                          components:
+                            - compName: comp-product1
+                              proudct1: false
+                            - compName: comp-product2
+                              product2: false
+                        contexts: ["a", "b", "c"]
+                        products:
+                          product1: false
+                          product2: true
+                      # external-secrets-config/argocd/stage
+                      - values:
+                          packageName: "external-secrets-config"
+                          clusterPurpose: "argocd"
+                          environment: "stage"
+                          appsetName: "infra-config-local"
+                        chartRepoUrl: https://github.com/Shaked/argocd-playground.git
+                        chartVersion: HEAD
+                        key:
+                          components:
+                            - compName: comp-product1
+                              proudct1: true
+                            - compName: comp-product2
+                              product2: true
+                        contexts: ["a", "b", "c"]
+                        products:
+                          product1: false
+                          product2: false
+                      # k8s-takeover/applicative/stage
+                      - values:
+                          packageName: "k8s-takeover"
+                          clusterPurpose: "applicative"
+                          environment: "stage"
+                          appsetName: "infra-config-local"
+                        chartRepoUrl: https://github.com/Shaked/argocd-playground.git
+                        chartVersion: HEAD
+                        namespace: default
+                        products: {}
+                      # k8s-takeover/argocd/dev
+                      - values:
+                          packageName: "k8s-takeover"
+                          clusterPurpose: "argocd"
+                          environment: "dev"
+                          appsetName: "infra-config-local"
+                        chartRepoUrl: https://github.com/Shaked/argocd-playground.git
+                        chartVersion: HEAD
+                        namespace: default
+                        products: {}
+                - clusters:
+                    selector:
+                      matchLabels:
+                        argocd.argoproj.io/secret-type: cluster
+                        cluster-purpose: "{{ .values.clusterPurpose }}"
+                        environment-{{ .values.environment }}: "true"
+          - list:
+              elements:
+                # This returns
+                #   The value of `.products[.metadata.labels.product]` if exists
+                #   False if .products exists, greather than 0 and  .metadata.labels.product does not exists
+                #   True if .products is set to []
+                #   True if .products is not set
+                - appEnabled: '{{ dig "products" (index .metadata.labels "product") (eq (len (dig "products" dict .)) 0) . }}'
+                  appClusterNameDisabled: '{{ dig "clusterNameDisabled" (.name) "false" . }}'
+                  appClusterGroupDisabled: '{{ dig "clusterGroupDisabled" (index .metadata.labels "cluster-group") "false" . }}'
+      selector:
+        matchExpressions:
+          - key: appEnabled
+            operator: NotIn
+            values:
+              - "false"
+          - key: appClusterNameDisabled
+            operator: NotIn
+            values:
+              - "true"
+          - key: appClusterGroupDisabled
+            operator: NotIn
+            values:
+              - "true"
+  template:
+    metadata:
+      name: "infra-{{ .name }}-{{ .values.environment }}-{{ .values.packageName }}"
+      annotations:
+        # See: https://argo-cd.readthedocs.io/en/stable/operator-manual/high_availability/#manifest-paths-annotation
+        argocd.argoproj.io/manifest-generate-paths: .
+        products: '{{ dig "products" "" . | toJson }}'
+        product: '{{ index .metadata.labels "product" }}'
+        appEnabled: "{{ .appEnabled }}"
+        appClusterNameDisabled: '{{ dig "clusterNameDisabled" (.name) "false" . }}'
+        appClusterGroupDisabled: '{{ dig "clusterGroupDisabled" (index .metadata.labels "cluster-group") "false" . }}'
+      labels:
+        cluster-purpose: "{{ .values.clusterPurpose }}"
+        environment: '{{ index .metadata.labels "environment" }}'
+        region: '{{ index .metadata.labels "region" }}'
+        product: '{{ index .metadata.labels "product" }}'
+        appset-name: "{{ .values.appsetName }}"
+        package-name: '{{ .values.packageName }}'
+    spec:
+      project: "infra"
+      sources:
+        - repoURL: "{{ .chartRepoUrl }}"
+          path: "charts/infra/{{ .values.packageName }}"
+          targetRevision: "{{ .chartVersion }}"
+          helm:
+            releaseName: '{{ dig "releaseName" (printf "%s" (.values.packageName)) . }}'
+            ignoreMissingValueFiles: true
+            valueFiles:
+              - "$values/values/operational/infra/{{ .values.packageName }}/values.yaml"
+              - "$values/values/operational/infra/{{ .values.packageName }}/{{ .values.environment }}/values.yaml"
+              - '$values/values/operational/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "region" }}/values.yaml'
+              - '$values/values/operational/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "product" }}/values.yaml'
+              - '$values/values/operational/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "product" }}/{{ index .metadata.labels "region" }}/values.yaml'
+              - '$values/values/operational/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "region" }}/{{ .name }}/values.yaml'
+        - repoURL: "https://github.com/Shaked/argocd-playground.git"
+          targetRevision: HEAD
+          ref: values
+      destination:
+        server: "{{ .server }}"
+        namespace: '{{ dig "namespace" (printf "%s" (.values.packageName)) . }}'
+  templatePatch: |
+    spec:
+      syncPolicy:
+        syncOptions:
+        - CreateNamespace=true
+        - PrunePropagationPolicy=orphan
+    {{- if or (not (hasKey . "autoSync")) (and (hasKey . "autoSync") (hasKey .autoSync "enabled") .autoSync.enabled) }}
+        automated:
+          prune: {{ dig "autoSync" "prune" "false" . }}
+          selfHeal: {{ dig "autoSync" "selfHeal" "false" . }}
+    {{- end }}
+    #   For disabling autosync as default
+    #   if and (hasKey . "autoSync") (hasKey .autoSync "enabled")
+    #   if .autoSync.enabled
+    #   end
+

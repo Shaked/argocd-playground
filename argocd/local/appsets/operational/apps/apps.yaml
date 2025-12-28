@@ -1,0 +1,185 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: apps-local
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+  generators:
+    - matrix:
+        generators:
+          # List generator replaces git generator - contains all argo.yaml content with path values
+          - list:
+              elements:
+                # app1/dummy1/dev
+                - values:
+                    product: "app1"
+                    packageName: "dummy1"
+                    environment: "dev"
+                    appsetName: "apps-local"
+                  chartRepoUrl: https://github.com/Shaked/argocd-playground.git
+                  chartVersion: HEAD
+                  enabled: true
+                  namespace: app1
+                  ignoreDifferences:
+                    - group: generators.external-secrets.io
+                      kind: Fake
+                      name: fake-key
+                # app1/dummy1/stage
+                - values:
+                    product: "app1"
+                    packageName: "dummy1"
+                    environment: "stage"
+                    appsetName: "apps-local"
+                  chartRepoUrl: https://github.com/Shaked/argocd-playground.git
+                  chartVersion: HEAD
+                  namespace: app1
+                # app1/dummy2/dev
+                - values:
+                    product: "app1"
+                    packageName: "dummy2"
+                    environment: "dev"
+                    appsetName: "apps-local"
+                  chartRepoUrl: https://github.com/Shaked/argocd-playground.git
+                  chartVersion: HEAD
+                  enabled: true
+                  namespace: app1
+                # app1/dummy2/stage
+                - values:
+                    product: "app1"
+                    packageName: "dummy2"
+                    environment: "stage"
+                    appsetName: "apps-local"
+                  chartRepoUrl: https://github.com/Shaked/argocd-playground.git
+                  chartVersion: HEAD
+                  namespace: app1
+                # app1/dummy5/dev
+                - values:
+                    product: "app1"
+                    packageName: "dummy5"
+                    environment: "dev"
+                    appsetName: "apps-local"
+                  chartRepoUrl: https://github.com/Shaked/argocd-playground.git
+                  chartVersion: HEAD
+                  enabled: true
+                  namespace: app1-canary
+                  ignoreDifferences:
+                    - group: generators.external-secrets.io
+                      kind: Fake
+                      name: fake-key
+                # app1/dummy5/stage
+                - values:
+                    product: "app1"
+                    packageName: "dummy5"
+                    environment: "stage"
+                    appsetName: "apps-local"
+                  chartRepoUrl: https://github.com/Shaked/argocd-playground.git
+                  chartVersion: HEAD
+                  namespace: app1-canary
+                  ignoreDifferences:
+                    - group: generators.external-secrets.io
+                      kind: Fake
+                      name: fake-key
+                # app2/dummy4/dev
+                - values:
+                    product: "app2"
+                    packageName: "dummy4"
+                    environment: "dev"
+                    appsetName: "apps-local"
+                  chartRepoUrl: https://github.com/Shaked/argocd-playground.git
+                  chartVersion: HEAD
+                  enabled: true
+                  namespace: app2
+                  ignoreDifferences:
+                    - group: generators.external-secrets.io
+                      kind: Fake
+                      name: fake-key
+                # app2/dummy4/stage
+                - values:
+                    product: "app2"
+                    packageName: "dummy4"
+                    environment: "stage"
+                    appsetName: "apps-local"
+                  chartRepoUrl: https://github.com/Shaked/argocd-playground.git
+                  chartVersion: HEAD
+                  namespace: app2
+                  ignoreDifferences:
+                    - kind: Secret
+                      name: aws-load-balancer-tls
+                      jsonPointers:
+                        - /data/ca.crt
+                        - /data/tls.crt
+                        - /data/tls.key
+                    - group: admissionregistration.k8s.io
+                      kind: MutatingWebhookConfiguration
+                      name: aws-load-balancer-webhook
+                      jsonPointers:
+                        - /webhooks/0/clientConfig/caBundle
+                        - /webhooks/1/clientConfig/caBundle
+                    - group: admissionregistration.k8s.io
+                      kind: ValidatingWebhookConfiguration
+                      name: aws-load-balancer-webhook
+                      jsonPointers:
+                        - /webhooks/0/clientConfig/caBundle
+                        - /webhooks/1/clientConfig/caBundle
+          - clusters:
+              selector:
+                matchLabels:
+                  argocd.argoproj.io/secret-type: cluster
+                  environment-{{ .values.environment }}: "true"
+                  product-{{ .values.product }}: '{{ dig "enabled" (true) . }}'
+  template:
+    metadata:
+      name: "apps-{{ .values.environment }}-{{ .name }}-{{ .values.product }}-{{ .values.packageName }}"
+      annotations:
+        # See: https://argo-cd.readthedocs.io/en/stable/operator-manual/high_availability/#manifest-paths-annotation
+        argocd.argoproj.io/manifest-generate-paths: .
+      labels:
+        product: "{{ .values.product }}"
+        package-name: "{{ .values.packageName }}"
+        environment: "{{ .values.environment }}"
+        region: '{{ index .metadata.labels "region" }}'
+        appset-name: "{{ .values.appsetName }}"
+    spec:
+      project: "apps"
+      sources:
+        - repoURL: "{{ .chartRepoUrl }}"
+          targetRevision: "{{ .chartVersion }}"
+          path: "charts/apps/{{ .values.product }}/{{ .values.packageName }}"
+          helm:
+            releaseName: '{{ dig "releaseName" (printf "%s-%s" (.values.product) (.values.packageName)) . }}'
+            ignoreMissingValueFiles: true
+            valueFiles:
+              - "$values/values/operational/apps/{{ .values.product }}/{{ .values.packageName }}/values.yaml"
+              - "$values/values/operational/apps/{{ .values.product }}/{{ .values.packageName }}/{{ .values.environment }}/values.yaml"
+              - '$values/values/operational/apps/{{ .values.product }}/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "region" }}/values.yaml'
+              - '$values/values/operational/apps/{{ .values.product }}/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "region" }}/{{ .name }}/values.yaml'
+        - repoURL: '{{ dig "valuesVersion" (printf "%s" (.chartRepoUrl)) . }}'
+          targetRevision: '{{ dig "valuesVersion" "main" . }}'
+          ref: values
+      destination:
+        server: "{{ .server }}"
+        namespace: '{{ dig "namespace" (printf "%s" (.values.product)) . }}'
+  templatePatch: |
+    spec:
+    {{- if hasKey . "ignoreDifferences" }}
+      ignoreDifferences:
+      {{ .ignoreDifferences | toYaml | nindent 12 }}
+    {{- end }}
+      syncPolicy:
+        syncOptions:
+        - CreateNamespace=true
+        - PrunePropagationPolicy=orphan
+    {{- if or (not (hasKey . "autoSync")) (and (hasKey . "autoSync") (hasKey .autoSync "enabled") .autoSync.enabled) }}
+        automated:
+          prune: {{ dig "autoSync" "prune" "false" . }}
+          selfHeal: {{ dig "autoSync" "selfHeal" "false" . }}
+    {{- end }}
+    #   For disabling autosync as default
+    #   if and (hasKey . "autoSync") (hasKey .autoSync "enabled")
+    #   if .autoSync.enabled
+    #   end
+

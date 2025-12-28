@@ -1,0 +1,156 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: infra-common-local
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+  generators:
+  - matrix:
+      generators:
+      # List generator replaces git generator - path: argocd/appsets/operational/infra/cluster-labels/common/**/argo.yaml
+      - list:
+          elements:
+            # external-secrets/applicative/dev
+            - values:
+                packageName: "external-secrets"
+                clusterPurpose: "applicative"
+                environment: "dev"
+                appsetName: "infra-common-local"
+              chartRepoUrl: https://charts.external-secrets.io
+              chartVersion: "0.17.0"
+              isGit: true
+              packagePath: charts/infra/git-override
+              chartVersionOverrideByClusterName:
+                k3d-810c8c12: "0.16.2"
+            # external-secrets/applicative/stage
+            - values:
+                packageName: "external-secrets"
+                clusterPurpose: "applicative"
+                environment: "stage"
+                appsetName: "infra-common-local"
+              chartRepoUrl: https://charts.external-secrets.io
+              chartVersion: "0.17.0"
+            # external-secrets/argocd/dev
+            - values:
+                packageName: "external-secrets"
+                clusterPurpose: "argocd"
+                environment: "dev"
+                appsetName: "infra-common-local"
+              chartRepoUrl: https://charts.external-secrets.io
+              chartVersion: "0.17.0"
+            # external-secrets/argocd/stage
+            - values:
+                packageName: "external-secrets"
+                clusterPurpose: "argocd"
+                environment: "stage"
+                appsetName: "infra-common-local"
+              chartRepoUrl: https://charts.external-secrets.io
+              chartVersion: "0.17.0"
+            # podinfo/applicative/dev
+            - values:
+                packageName: "podinfo"
+                clusterPurpose: "applicative"
+                environment: "dev"
+                appsetName: "infra-common-local"
+              chartRepoUrl: oci://ghcr.io/stefanprodan/charts/podinfo
+              chartVersion: "6.8.0"
+              helmPackageName: podinfo
+              releaseName: "test-podinfo"
+              serverSideApply: true
+              chartVersionOverrideByClusterName:
+                k3d-810c8c12: "6.9.0"
+            # podinfo/argocd/dev
+            - values:
+                packageName: "podinfo"
+                clusterPurpose: "argocd"
+                environment: "dev"
+                appsetName: "infra-common-local"
+              chartRepoUrl: oci://ghcr.io/stefanprodan/charts/podinfo
+              chartVersion: "6.8.0"
+              helmPackageName: podinfo
+              releaseName: "test-podinfo"
+              serverSideApply: true
+            # cert-manager/applicative/dev
+            - values:
+                packageName: "cert-manager"
+                clusterPurpose: "applicative"
+                environment: "dev"
+                appsetName: "infra-common-local"
+              chartRepoUrl: https://charts.jetstack.io
+              chartVersion: "1.16.1"
+            # cert-manager/argocd/dev
+            - values:
+                packageName: "cert-manager"
+                clusterPurpose: "argocd"
+                environment: "dev"
+                appsetName: "infra-common-local"
+              chartRepoUrl: https://charts.jetstack.io
+              chartVersion: "1.16.1"
+            # argocd/argocd/dev
+            - values:
+                packageName: "argocd"
+                clusterPurpose: "argocd"
+                environment: "dev"
+                appsetName: "infra-common-local"
+              chartRepoUrl: https://argoproj.github.io/argo-helm
+              chartVersion: "7.8.2"
+              packagePathOrName: argo-cd
+      - clusters:
+          selector:
+            matchLabels:
+              argocd.argoproj.io/secret-type: cluster
+              cluster-purpose: '{{ .values.clusterPurpose }}'
+              environment-{{ .values.environment }}: "true"
+  template:
+    metadata:
+      name: 'infra-{{ .name }}-{{ .values.environment }}-{{ .values.packageName }}'
+      annotations:
+        # See: https://argo-cd.readthedocs.io/en/stable/operator-manual/high_availability/#manifest-paths-annotation
+        argocd.argoproj.io/manifest-generate-paths: .
+      labels:
+        cluster-purpose: '{{ .values.clusterPurpose }}'
+        environment: '{{ index .metadata.labels "environment" }}'
+        region: '{{ index .metadata.labels "region" }}'
+        appset-name: '{{ .values.appsetName }}'
+        package-name: '{{ .values.packageName }}'
+        chart-name: '{{ dig "packagePathOrName" (printf "%s" (.values.packageName)) . }}'
+    spec:
+      project: "infra"
+      sources:
+      - repoURL: "{{ .chartRepoUrl }}"
+        chart : '{{ dig "packagePathOrName" (printf "%s" (.values.packageName)) . }}'
+        targetRevision: '{{ dig "chartVersionOverrideByClusterName" (.name) (printf "%s" (.chartVersion)) . }}'
+        helm:
+          releaseName: '{{ dig "releaseName" (printf "%s" (.values.packageName)) . }}'
+          ignoreMissingValueFiles: true
+          valueFiles:
+          - '$values/values/operational/infra/{{ .values.packageName }}/values.yaml'
+          - '$values/values/operational/infra/{{ .values.packageName }}/{{ .values.environment }}/values.yaml'
+          - '$values/values/operational/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "region" }}/values.yaml'
+          - '$values/values/operational/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ index .metadata.labels "region" }}/{{ .name }}/values.yaml'
+      - repoURL: 'https://github.com/Shaked/argocd-playground.git'
+        targetRevision: HEAD
+        ref: values
+      destination:
+        server: "{{ .server }}"
+        namespace: '{{ dig "namespace" (printf "%s" (.values.packageName)) . }}'
+  templatePatch: |
+    spec:
+      syncPolicy:
+        syncOptions:
+        - CreateNamespace=true
+        - PrunePropagationPolicy=orphan
+    {{- if or (not (hasKey . "autoSync")) (and (hasKey . "autoSync") (hasKey .autoSync "enabled") .autoSync.enabled) }}
+        automated:
+          prune: {{ dig "autoSync" "prune" "false" . }}
+          selfHeal: {{ dig "autoSync" "selfHeal" "false" . }}
+    {{- end }}
+    #   For disabling autosync as default
+    #   if and (hasKey . "autoSync") (hasKey .autoSync "enabled")
+    #   if .autoSync.enabled
+    #   end
+

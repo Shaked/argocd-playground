@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root-app-local
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+  sources:
+    # Projects - shared with git setup
+    - repoURL: 'https://github.com/Shaked/argocd-playground'
+      path: "argocd/git/projects"
+      targetRevision: main
+    # Local appsets - use list generators instead of git generators
+    - repoURL: 'https://github.com/Shaked/argocd-playground'
+      path: "argocd/local/appsets/operational/infra"
+      targetRevision: main
+    - repoURL: 'https://github.com/Shaked/argocd-playground'
+      path: "argocd/local/appsets/operational/apps"
+      targetRevision: main
+    - repoURL: 'https://github.com/Shaked/argocd-playground'
+      path: "argocd/local/appsets/tests/infra"
+      targetRevision: main
+    - repoURL: 'https://github.com/Shaked/argocd-playground'
+      path: "argocd/local/appsets/tests/apps"
+      targetRevision: main
+  destination:
+    namespace: argocd
+    name: in-cluster
+

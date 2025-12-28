@@ -1,0 +1,88 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: infra-cloud-provider-local
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+  generators:
+  - matrix:
+      generators:
+      # List generator replaces git generator - path: argocd/appsets/operational/infra/cluster-labels/cloud-provider/**/**/argo.yaml
+      - list:
+          elements:
+            # aws/aws-load-balancer-controller/applicative/dev
+            - values:
+                cloudProvider: "aws"
+                packageName: "aws-load-balancer-controller"
+                clusterPurpose: "applicative"
+                environment: "dev"
+                appsetName: "infra-cloud-provider-local"
+              chartVersion: "1.9.1"
+              chartRepoUrl: https://aws.github.io/eks-charts
+            # aws/aws-load-balancer-controller/applicative/stage
+            - values:
+                cloudProvider: "aws"
+                packageName: "aws-load-balancer-controller"
+                clusterPurpose: "applicative"
+                environment: "stage"
+                appsetName: "infra-cloud-provider-local"
+              chartVersion: "1.9.0"
+              chartRepoUrl: https://aws.github.io/eks-charts
+      - clusters:
+          selector:
+            matchLabels:
+              argocd.argoproj.io/secret-type: cluster
+              cloud-provider: '{{ .values.cloudProvider }}'
+              cluster-purpose: '{{ .values.clusterPurpose }}'
+              environment-{{ .values.environment }}: "true"
+  template:
+    metadata:
+      name: 'infra-{{ .name }}-{{ .values.environment }}-{{ .values.packageName }}-{{ .values.cloudProvider }}'
+      labels:
+        cloud-provider: '{{ .values.cloudProvider }}'
+        cluster-purpose: '{{ .values.clusterPurpose }}'
+        environment: '{{ index .metadata.labels "environment" }}'
+        region: '{{ index .metadata.labels "region" }}'
+        appset-name: '{{ .values.appsetName }}'
+        package-name: '{{ .values.packageName }}'
+    spec:
+      project: "infra"
+      sources:
+      - repoURL: "{{ .chartRepoUrl }}"
+        chart: '{{ dig "packageName" (printf "%s" (.values.packageName)) . }}'
+        targetRevision: "{{ .chartVersion }}"
+        helm:
+          releaseName: '{{ dig "releaseName" (printf "%s" (.values.packageName)) . }}'
+          ignoreMissingValueFiles: true
+          valueFiles:
+          - '$values/values/operational/infra/{{ .values.packageName }}/values.yaml'
+          - '$values/values/operational/infra/{{ .values.packageName }}/{{ .values.environment }}/values.yaml'
+          - '$values/values/operational/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ .values.cloudProvider }}/values.yaml'
+          - '$values/values/operational/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ .values.cloudProvider }}/{{ index .metadata.labels "region" }}/values.yaml'
+          - '$values/values/operational/infra/{{ .values.packageName }}/{{ .values.environment }}/{{ .values.cloudProvider }}/{{ index .metadata.labels "region" }}/{{ .name }}/values.yaml'
+      - repoURL: '{{ dig "valuesVersion" (printf "%s" (.chartRepoUrl)) . }}'
+        targetRevision: '{{ dig "valuesVersion" "main" . }}'
+        ref: values
+      destination:
+        server: "{{ .server }}"
+        namespace: '{{ dig "namespace" (printf "%s" (.values.packageName)) . }}'
+  templatePatch: |
+    spec:
+      syncPolicy:
+        syncOptions:
+        - CreateNamespace=true
+        - PrunePropagationPolicy=orphan
+    {{- if or (not (hasKey . "autoSync")) (and (hasKey . "autoSync") (hasKey .autoSync "enabled") .autoSync.enabled) }}
+        automated:
+          prune: {{ dig "autoSync" "prune" "false" . }}
+          selfHeal: {{ dig "autoSync" "selfHeal" "false" . }}
+    {{- end }}
+    #   For disabling autosync as default
+    #   if and (hasKey . "autoSync") (hasKey .autoSync "enabled")
+    #   if .autoSync.enabled
+    #   end
+
